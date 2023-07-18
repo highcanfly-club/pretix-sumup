@@ -20,17 +20,17 @@ function waitForElm(selector) {
 }
 function radioClickHandler() {
     let submitElm = document.querySelector('button[type="submit"]');
-    if(document.querySelector("#input_payment_sumuppayment").checked){
-        submitElm.classList.add('hidden');
+    if (document.querySelector("#input_payment_sumuppayment").checked) {
+       // submitElm.classList.add('hidden');
         SumUpCard.mount({
             id: 'sumup-card',
             checkoutId: '2ceffb63-cbbe-4227-87cf-0409dd191a98',
             onResponse: function (type, body) {
-              console.log('Type', type);
-              console.log('Body', body);
+                console.log('Type', type);
+                console.log('Body', body);
             },
-          });
-    }else{
+        });
+    } else {
         submitElm.classList.remove('hidden');
     }
 }

@@ -1,14 +1,24 @@
-<script nonce="{{ request.csp_nonce }}" src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
+<script type="text/javascript" nonce="{{ nonce }}" src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
 {% load i18n %}
 {% load static %}
-{% load compress %}
 
-{% compress js %}
-    <script type="text/javascript" src="{% static "pretix_sumup/sumup.js" %}"></script>
-{% endcompress %}
+<script type="text/javascript" nonce="{{ nonce }} src="{% static " pretix_sumup/sumup.js" %}" ></script>
 
 {% load bootstrap3 %}
 <p>{% blocktrans trimmed %}
-    Please click on Pay with Sumup
+    Please click on Pay with Sumup {{ nonce }}
     {% endblocktrans %}</p>
-    <div id="sumup-card"></div>
+<div id="sumup-card"></div>
+
+<script type="text/javascript" nonce="{{ nonce }}">
+    SumUpCard.mount({
+        id: 'sumup-card',
+        checkoutId: "{{sumupCheckout.id}}",
+        onResponse: function (type, body) {
+            console.log('Type', type);
+            console.log('Body', body);
+            sumupCard.unmount();
+        },
+        showSubmitButton: false,
+    });
+</script>

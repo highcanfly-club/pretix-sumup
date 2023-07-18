@@ -6,7 +6,7 @@ from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
 from i18nfield.fields import I18nFormField, I18nTextarea
 from i18nfield.strings import LazyI18nString
-
+from django.utils.crypto import get_random_string
 from pretix.base.models import OrderPayment
 from pretix.base.payment import BasePaymentProvider
 import requests
@@ -20,8 +20,7 @@ class SumupPayment(BasePaymentProvider):
     identifier = 'sumuppayment'
     verbose_name = _('Sumup Payment')
     abort_pending_allowed = True
-    sumupToken = False
-
+        
     @property
     def test_mode_message(self):
         return _('In test mode, you can just manually mark this order as paid in the backend after it has been '
@@ -35,7 +34,7 @@ class SumupPayment(BasePaymentProvider):
                  label=_('Sumup Client ID'),
                  max_length=40,
                  min_length=40,
-                 help_text=_('This is Sumup OAuth app Client ID')
+                 help_text=_('This is Sumup Client ID (under your name on the top right of the main Sumup screen)')
              )),
             ('secret',
              forms.CharField(
@@ -110,42 +109,80 @@ class SumupPayment(BasePaymentProvider):
         }
 
         response = requests.request("POST", url, headers=headers, data=payload)
-        print(response)
+        return response
+
+    # def payment_form_render(self, request) -> str:
+    #     if not hasattr(request.session, "_sumup_nonce"):
+    #         request.session["_sumup_nonce"] = get_random_string(32)
+    #     print('SumupPayment.payment_form_render session='+request.session["_sumup_nonce"], file=sys. stderr)
+    #     client_id = self.settings.get('client_id')
+    #     secret = self.settings.get('secret')
+    #     sumupid = self.settings.get('sumupid')
+    #     request.session['sumupToken'] = self.sumup_get_token(client_id, secret)
+    #     if isinstance(request.session['sumupToken'], str):
+    #         if isinstance(request.session["sumupCheckout"]['checkout_reference'], str): 
+    #             print("token="+str(request.session['sumupToken']),file=sys.stderr)
+    #             template = get_template('pretix_sumup/checkout_payment_form.html')
+    #             ctx = {
+    #                 'request': request,
+    #                 'event': self.event,
+    #                 'client_id': client_id,
+    #                 'secret': secret,
+    #                 'sumpid': sumupid,
+    #                 'sumupToken': request.session['sumupToken'],
+    #                 'sumupCheckout': request.session["sumupCheckout"],
+    #                 'button_text': _('Pay with Sumup'),
+    #                 'nonce': request.session["_sumup_nonce"]
+    #             }
+    #             return template.render(ctx)
+    #         else:
+    #             ctx = {}
+    #             template = get_template('pretix_sumup/prepare.html')
+    #             return template.render(ctx)
+    #     else:
+    #         self.sumupToken = False
+    #         ctx = {}
+    #         template = get_template('pretix_sumup/not_available.html')
+    #         return template.render(ctx)
 
     def payment_form_render(self, request) -> str:
-        print('SumupPayment.payment_form_render', file=sys. stderr)
+        print('SumupPayment.payment_form_render', file=sys. stderr)   
+        ctx = {}
+        template = get_template('pretix_sumup/prepare.html')
+        return template.render(ctx)    
+
+    def checkout_prepare(self, request, cart):
+        print('SumupPayment.checkout_prepare', file=sys. stderr)
         client_id = self.settings.get('client_id')
         secret = self.settings.get('secret')
         sumupid = self.settings.get('sumupid')
-        token = self.sumup_get_token(client_id, secret)
-        if isinstance(token, str):       
-            template = get_template('pretix_sumup/checkout_payment_form.html')
-            ctx = {
-                'request': request,
-                'event': self.event,
-                'client_id': client_id,
-                'secret': secret,
-                'sumpid': sumupid,
-                'token': token,
-                'button_text': _('Pay with Sumup')
-                # 'information_text': self.settings.get('information_text', as_type=LazyI18nString),
-            }
-            self.sumupToken = token
-            return template.render(ctx)
-        else:
-            self.sumupToken = False
-            ctx = {}
-            template = get_template('pretix_sumup/not_available.html')
-            return template.render(ctx)
-            
+        sumupToken = self.sumup_get_token(client_id, secret)
+        if isinstance(sumupToken, str):
+            sumupCheckoutResponse = self.sumup_create_checkout(sumupToken, sumupid, str(cart["total"]), 'none@example.com', 'none', 'example')
+            if (sumupCheckoutResponse.status_code == 201) :
+                print('SumupPayment.checkout_prepare OK: '+str(sumupCheckoutResponse.content), file=sys. stderr)
+                request.session["sumupCheckout"] = json.loads(sumupCheckoutResponse.content)
+                return True
+            else:
+                request.session["sumupCheckout"] = ""
+                return False
+        request.session["sumupCheckout"] = ""
+        return False
 
-    def checkout_prepare(self, request, cart):
-        print(cart, file=sys. stderr)
-        print(cart["total"], file=sys. stderr)
-        print(self.event.currency, file=sys. stderr)
-        self.sumup_create_checkout(self.sumupToken, self.settings.get('sumupid'), str(cart["total"]), 'none@example.com', 'none', 'example')
-        print('SumupPayment.checkout_prepare', file=sys. stderr)
-        return True
+    # def checkout_prepare(self, request, cart):
+    #     print(cart, file=sys. stderr)
+    #     print(cart["total"], file=sys. stderr)
+    #     print(self.event.currency, file=sys. stderr)
+    #     sumupCheckoutResponse = self.sumup_create_checkout(request.session['sumupToken'], self.settings.get('sumupid'), str(cart["total"]), 'none@example.com', 'none', 'example')
+    #     if (sumupCheckoutResponse.status_code >= 200) and (sumupCheckoutResponse.status_code < 300):          
+    #         print('SumupPayment.checkout_prepare OK: '+str(sumupCheckoutResponse.content), file=sys. stderr)
+    #         request.session["sumupCheckout"] = json.loads(sumupCheckoutResponse.content)
+    #         print("checkout="+request.session["sumupCheckout"]['checkout_reference'], file=sys. stderr)
+    #         return True
+    #     else:
+    #         print('SumupPayment.checkout_prepare ERROR: '+str(sumupCheckoutResponse.status_code), file=sys. stderr)
+    #         print(sumupCheckoutResponse.content, file=sys.stderr)
+    #         return False
 
     def payment_prepare(self, request: HttpRequest, payment: OrderPayment) -> bool | str:
         print('SumupPayment.payment_prepare', file=sys. stderr)
@@ -157,9 +194,17 @@ class SumupPayment(BasePaymentProvider):
 
     def checkout_confirm_render(self, request):
         print('SumupPayment.checkout_confirm_render', file=sys. stderr)
-        return self.payment_form_render(request)
+        ctx = {
+            'request': request,
+            'event': self.event,
+            'sumupCheckout': request.session["sumupCheckout"],
+            'nonce': request.session["_sumup_nonce"]
+        }
+        template = get_template('pretix_sumup/checkout_payment_form.html')
+        return template.render(ctx)
 
     def order_pending_mail_render(self, order) -> str:
+        print('SumupPayment.order_pending_mail_render', file=sys. stderr)
         template = get_template('pretix_sumup/email/order_pending.txt')
         ctx = {
             'event': self.event,
@@ -169,6 +214,7 @@ class SumupPayment(BasePaymentProvider):
         return template.render(ctx)
 
     def payment_pending_render(self, request: HttpRequest, payment: OrderPayment):
+        print('SumupPayment.payment_pending_render', file=sys. stderr)
         template = get_template('pretix_sumup/pending.html')
         ctx = {
             'event': self.event,
@@ -178,6 +224,7 @@ class SumupPayment(BasePaymentProvider):
         return template.render(ctx)
 
     def payment_control_render(self, request: HttpRequest, payment: OrderPayment):
+        print('SumupPayment.payment_control_render', file=sys. stderr)
         template = get_template('pretix_sumup/control.html')
         ctx = {'request': request, 'event': self.event,
                'payment_info': payment.info_data, 'order': payment.order}
