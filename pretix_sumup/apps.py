@@ -17,7 +17,8 @@ class PluginApp(PluginConfig):
         name = _("Sumup for Pretix")
         author = "Ronan Le Meillat"
         picture = "pretix_sumup/sumup-logo-black.svg"
-        description = _("Sumup plugin is a payment plugin for enabling online payment via Sumup. Note that you will need to register an OAuth application and require to the Sumup team to add the 'payment' scope")
+        description = _("Sumup plugin is a payment plugin for enabling online payment via Sumup."
+                        "Note that you will need to register an OAuth application and require to the Sumup team to add the 'payment' scope")
         visible = True
         version = __version__
         category = "PAYMENT"

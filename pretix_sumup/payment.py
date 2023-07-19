@@ -1,24 +1,20 @@
-from typing import Union
-
 import json
 import requests
 import sys
 import uuid
 from collections import OrderedDict
-from datetime import datetime, timedelta
 from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
 from django.utils.crypto import get_random_string
 from django.utils.translation import get_language, gettext_lazy as _, to_locale
-from i18nfield.fields import I18nFormField, I18nTextarea
 from i18nfield.strings import LazyI18nString
 from pretix.base.models import OrderPayment
 from pretix.base.payment import BasePaymentProvider
 
 
 def getNonce(request):
-    if not "_sumup_nonce" in request.session:
+    if "_sumup_nonce" not in request.session:
         request.session['_sumup_nonce'] = get_random_string(32)
     return request.session['_sumup_nonce']
 
@@ -85,8 +81,6 @@ class SumupPayment(BasePaymentProvider):
 
     def sumup_create_checkout(self, merchantToken, sumupId, amount, email, firstName, lastName):
         url = "https://api.sumup.com/v0.1/checkouts"
-        now = datetime.now()
-        until = now + timedelta(seconds=600)
         data = {
             "checkout_reference": str(uuid.uuid4()),
             "amount": amount,
@@ -109,9 +103,9 @@ class SumupPayment(BasePaymentProvider):
         response = requests.request("POST", url, headers=headers, data=payload)
         return response
 
-    def check_sumup_payment_done(self,sumupToken,sumupCheckout):
+    def check_sumup_payment_done(self, sumupToken, sumupCheckout):
         print('SumupPayment.check_sumup_payment_done', file=sys. stderr)
-        url = "https://api.sumup.com/v0.1/checkouts/"+sumupCheckout['id']
+        url = "https://api.sumup.com/v0.1/checkouts/" + sumupCheckout['id']
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -119,7 +113,7 @@ class SumupPayment(BasePaymentProvider):
         }
         response = requests.request("GET", url, headers=headers)
         sumupResponse = json.loads(response.content)
-        print('Sumup checkout:{} status: {}'.format(sumupCheckout['id'],sumupResponse['status']) , file=sys. stderr)
+        print('Sumup checkout:{} status: {}'.format(sumupCheckout['id'], sumupResponse['status']), file=sys. stderr)
         if sumupResponse['status'] == 'PAID':
             return True
         else:
@@ -151,11 +145,11 @@ class SumupPayment(BasePaymentProvider):
         request.session["sumupCheckout"] = ""
         request.session["sumupToken"] = ""
         return False
-    
+
     def payment_prepare(self, request: HttpRequest, payment: OrderPayment) -> bool | str:
         print('SumupPayment.payment_prepare', file=sys. stderr)
         return True
-    
+
     def payment_is_valid_session(self, request):
         print('SumupPayment.payment_is_valid_session', file=sys. stderr)
         return True
@@ -166,18 +160,18 @@ class SumupPayment(BasePaymentProvider):
             if self.check_sumup_payment_done(request.session["sumupToken"], request.session["sumupCheckout"]):
                 payment.confirm()
 
-    def get_sumup_locale(self,request):
+    def get_sumup_locale(self, request):
         languageDjango = get_language()
         localeDjango = to_locale(languageDjango)
         baseLocale = localeDjango[0:2]
         subLocale = localeDjango[3:5].upper()
         if subLocale == "":
             subLocale = baseLocale.upper()
-        locale = "{}-{}".format(baseLocale,subLocale)
+        locale = "{}-{}".format(baseLocale, subLocale)
         return locale
 
     def checkout_confirm_render(self, request):
-        print('SumupPayment.checkout_confirm_render', file=sys. stderr)      
+        print('SumupPayment.checkout_confirm_render', file=sys. stderr)
         ctx = {
             'request': request,
             'event': self.event,

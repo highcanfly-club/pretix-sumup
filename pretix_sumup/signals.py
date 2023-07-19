@@ -1,5 +1,4 @@
 # Register your receivers here
-import sys
 from django.dispatch import receiver
 from django.http import HttpRequest, HttpResponse
 from django.urls import resolve
@@ -27,7 +26,11 @@ def signal_process_response(sender, request: HttpRequest, response: HttpResponse
             csps = {
                 'script-src': ['https://gateway.sumup.com', 'https://net-tracker.notolytix.com', "'nonce-{}'".format(getNonce(request)), "'unsafe-eval'"],
                 'frame-src': ['https://gateway.sumup.com/', "'nonce-{}'".format(getNonce(request))],
-                'connect-src': ['https://gateway.sumup.com', 'https://api.sumup.com', 'https://api.notolytix.com','https://cdn.optimizely.com', "'nonce-{}'".format(getNonce(request))],
+                'connect-src': ['https://gateway.sumup.com',
+                                'https://api.sumup.com',
+                                'https://api.notolytix.com',
+                                'https://cdn.optimizely.com',
+                                "'nonce-{}'".format(getNonce(request))],
                 'img-src': ['https://static.sumup.com', "'nonce-{}'".format(getNonce(request))],
                 'style-src': ["'unsafe-inline'"]
             }
@@ -37,4 +40,3 @@ def signal_process_response(sender, request: HttpRequest, response: HttpResponse
             response['Content-Security-Policy'] = _render_csp(h)
 
     return response
-
