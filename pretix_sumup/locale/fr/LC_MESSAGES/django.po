@@ -11,6 +11,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "Sumup for Pretix"
+msgstr "Sumup pour Pretix"
+
 msgid "Sumup Payment"
 msgstr "Paiement Sumup"
 
@@ -37,3 +40,6 @@ msgstr "Paiement ok, obtenez votre billet"
 
 msgid "You will see the Sumup form after clicking on Continue"
 msgstr "Vous verrez le formulaire Sumup après avoir cliqué sur Continuer"
+
+msgid "Sumup plugin is a payment plugin for enabling online payment via Sumup. Note that you will need to register an OAuth application and require to the Sumup team to add the 'payment' scope"
+msgstr "Le plugin Sumup est un plugin de paiement pour activer le paiement en ligne via Sumup. Notez que vous devrez enregistrer une application OAuth et demander à l'équipe SUPUP pour ajouter le scope 'payment'"

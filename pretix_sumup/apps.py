@@ -1,4 +1,4 @@
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy as _
 from . import __version__
 
 try:
@@ -13,9 +13,10 @@ class PluginApp(PluginConfig):
     verbose_name = "Sumup for Pretix"
 
     class PretixPluginMeta:
-        name = gettext_lazy("Sumup for Pretix")
+        name = _("Sumup for Pretix")
         author = "Ronan Le Meillat"
-        description = gettext_lazy("Sumup plugin")
+        picture = "pretix_sumup/sumup-logo-black.svg"
+        description = _("Sumup plugin is a payment plugin for enabling online payment via Sumup. Note that you will need to register an OAuth application and require to the Sumup team to add the 'payment' scope")
         visible = True
         version = __version__
         category = "PAYMENT"
