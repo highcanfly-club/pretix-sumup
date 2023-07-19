@@ -19,7 +19,6 @@ from datetime import datetime, timedelta
 def getNonce(request):
     if not "_sumup_nonce" in request.session:
         request.session['_sumup_nonce'] = get_random_string(32)
-    print('nonce=' + request.session['_sumup_nonce'], file=sys.stderr)
     return request.session['_sumup_nonce']
 
 
@@ -38,10 +37,10 @@ class SumupPayment(BasePaymentProvider):
         fields = [
             ('client_id',
              forms.CharField(
-                 label=_('Sumup Client ID'),
+                 label=_('Sumup Oauth App Client ID'),
                  max_length=40,
                  min_length=40,
-                 help_text=_('This is Sumup Client ID (under your name on the top right of the main Sumup screen)')
+                 help_text=_('Find it in the developer application view')
              )),
             ('secret',
              forms.CharField(
@@ -55,7 +54,7 @@ class SumupPayment(BasePaymentProvider):
                  label=_('Sumup ID'),
                  max_length=12,
                  min_length=8,
-                 help_text=_('This is Sumup ID')
+                 help_text=_('This is Sumup Client ID (under your name on the top right of the main Sumup screen)')
              )),
         ]
         return OrderedDict(
@@ -183,7 +182,8 @@ class SumupPayment(BasePaymentProvider):
             'event': self.event,
             'sumupCheckout': request.session["sumupCheckout"],
             'nonce': getNonce(request),
-            'locale': self.get_sumup_locale(request)
+            'locale': self.get_sumup_locale(request),
+            'btn_text': _("Payment OK, get your ticket")
         }
         template = get_template('pretix_sumup/checkout_payment_form.html')
         return template.render(ctx)

@@ -1,8 +1,8 @@
 {% load i18n %}
 {% load static %}
 {% load bootstrap3 %}
-<p>{% blocktrans trimmed %}
-    Please click on Pay with Sumup {{ nonce }}
+<p id="help-text">{% blocktrans trimmed %}
+    Please fill and click on Pay in the Sumup widget
     {% endblocktrans %}</p>
 <div id="sumup-card"></div>
 
@@ -48,10 +48,11 @@
                 console.log('Type', type);
                 console.log('Body', body);
                 if (type == "success") {
+                    document.getElementById('help-text').innerHTML = "";
                     sumupCard.unmount();
                     submitElm.classList.remove('hidden');
                     submitElm.disabled = false;
-                    submitElm.innerHTML = "Payment OK, get your ticket";
+                    submitElm.innerHTML = "{{btn_text}}";
                 }
             }
         });

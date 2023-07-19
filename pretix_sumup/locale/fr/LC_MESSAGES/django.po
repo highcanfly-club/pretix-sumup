@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-07 19:01+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ronan Le Meillat\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Sumup Payment"
+msgstr "Paiement Sumup"
+
+msgid "Please fill and click on Pay in the Sumup widget"
+msgstr "Veuillez remplir et cliquer sur Payer dans le widget Sumup"
+
+msgid "In test mode, you can just manually mark this order as paid in the backend after it has been created."
+msgstr "En mode test, vous pouvez simplement marquer manuellement cette commande comme payée dans le backend après sa création."
+
+msgid "This is Sumup Client ID (under your name on the top right of the main Sumup screen)"
+msgstr "Ceci est l'ID Client Sumup (sous votre nom en haut à droite de l'écran Sumup principal)"
+
+msgid "This is Sumup OAuth app Client Secret"
+msgstr "Ceci est le secret OAuth de l'application Sumup"
+
+msgid "Sumup Oauth App Client ID"
+msgstr "Sumup OAuth App Client ID"
+
+msgid "Find it in the developer application view"
+msgstr "Trouvez-le dans la vue application de l'interface développeur"
+
+msgid "Payment OK, get your ticket"
+msgstr "Paiement ok, obtenez votre billet"
+
+msgid "You will see the Sumup form after clicking on Continue"
+msgstr "Vous verrez le formulaire Sumup après avoir cliqué sur Continuer"

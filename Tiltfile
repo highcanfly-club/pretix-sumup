@@ -34,6 +34,7 @@ custom_build('highcanfly/pretix','./kaniko-build.sh',[
   live_update=[
     sync('./pretix_sumup/.', '/pretix-sumup/pretix_sumup'),
     run('sudo -u pretixuser pretix collectstatic --noinput && sudo -u pretixuser pretix compress', trigger='./pretix_sumup/static'),
+    run('cd /pretix-sumup && make', trigger='./pretix_sumup/locale'),
     run('supervisorctl -s unix:///tmp/supervisor.sock restart pretixweb', trigger='./pretix_sumup')
 ])
 
