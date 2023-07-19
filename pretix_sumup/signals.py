@@ -3,12 +3,9 @@ from pretix.base.signals import register_payment_providers
 from django.http import HttpRequest, HttpResponse
 from django.dispatch import receiver
 from django.urls import resolve
-from pretix.base.settings import settings_hierarkey
-from django.utils.translation import gettext_lazy as _, gettext_noop
-from i18nfield.strings import LazyI18nString
 from pretix.base.middleware import _merge_csp, _parse_csp, _render_csp
-from django.utils.crypto import get_random_string
-from pretix.presale.signals import html_head, process_response
+from pretix.presale.signals import process_response
+from .payment import getNonce
 import sys
 
 
@@ -27,10 +24,10 @@ def signal_process_response(sender, request: HttpRequest, response: HttpResponse
         else:
             h = {}
             csps = {
-                'script-src': ['https://gateway.sumup.com', 'https://net-tracker.notolytix.com', "'nonce-{}'".format(request.session["_sumup_nonce"]), "'unsafe-eval'"],
-                'frame-src': ['https://gateway.sumup.com/', "'nonce-{}'".format(request.session["_sumup_nonce"])],
-                'connect-src': ['https://gateway.sumup.com', 'https://api.sumup.com', 'https://api.notolytix.com','https://cdn.optimizely.com', "'nonce-{}'".format(request.session["_sumup_nonce"])],
-                'img-src': ['https://static.sumup.com', "'nonce-{}'".format(request.session["_sumup_nonce"])],
+                'script-src': ['https://gateway.sumup.com', 'https://net-tracker.notolytix.com', "'nonce-{}'".format(getNonce(request)), "'unsafe-eval'"],
+                'frame-src': ['https://gateway.sumup.com/', "'nonce-{}'".format(getNonce(request))],
+                'connect-src': ['https://gateway.sumup.com', 'https://api.sumup.com', 'https://api.notolytix.com','https://cdn.optimizely.com', "'nonce-{}'".format(getNonce(request))],
+                'img-src': ['https://static.sumup.com', "'nonce-{}'".format(getNonce(request))],
                 'style-src': ["'unsafe-inline'"]
             }
 
