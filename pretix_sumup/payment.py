@@ -3,7 +3,7 @@ from typing import Union
 from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _ ,get_language , to_locale
 from i18nfield.fields import I18nFormField, I18nTextarea
 from i18nfield.strings import LazyI18nString
 from django.utils.crypto import get_random_string
@@ -57,15 +57,6 @@ class SumupPayment(BasePaymentProvider):
                  min_length=8,
                  help_text=_('This is Sumup ID')
              )),
-            # ('endpoint',
-            #  forms.ChoiceField(
-            #      label=_('Endpoint'),
-            #      initial='live',
-            #      choices=(
-            #              ('live', 'Live'),
-            #              ('sandbox', 'Sandbox'),
-            #      ),
-            #  )),
         ]
         return OrderedDict(
             fields + list(super().settings_form_fields.items())
@@ -175,13 +166,24 @@ class SumupPayment(BasePaymentProvider):
             if self.check_sumup_payment_done(request.session["sumupToken"], request.session["sumupCheckout"]):
                 payment.confirm()
 
+    def get_sumup_locale(self,request):
+        languageDjango = get_language()
+        localeDjango = to_locale(languageDjango)
+        baseLocale = localeDjango[0:2]
+        subLocale = localeDjango[3:5].upper()
+        if subLocale == "":
+            subLocale = baseLocale.upper()
+        locale = "{}-{}".format(baseLocale,subLocale)
+        return locale
+
     def checkout_confirm_render(self, request):
-        print('SumupPayment.checkout_confirm_render', file=sys. stderr)
+        print('SumupPayment.checkout_confirm_render', file=sys. stderr)      
         ctx = {
             'request': request,
             'event': self.event,
             'sumupCheckout': request.session["sumupCheckout"],
-            'nonce': getNonce(request)
+            'nonce': getNonce(request),
+            'locale': self.get_sumup_locale(request)
         }
         template = get_template('pretix_sumup/checkout_payment_form.html')
         return template.render(ctx)

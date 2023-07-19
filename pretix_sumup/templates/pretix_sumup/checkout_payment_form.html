@@ -11,7 +11,7 @@
 <script type="text/javascript" nonce="{{ nonce }}">
     /* © Ronan LE MEILlAT 2023 */
     let sumupCard; // will host Sumup widget
-    
+
     function waitForElm(selector) {
         return new Promise(resolve => {
             if (document.querySelector(selector)) {
@@ -39,17 +39,11 @@
     waitForElm('button[type="submit"]').then((submitElm) => {
         submitElm.classList.add('hidden');
         submitElm.disabled = true;
-        // let btnPay = _button = document.createElement("button");
-        // btnPay.innerHTML = "Pay with Sumup";
-        // btnPay.classList.add('btn', 'btn-block', 'btn-primary', 'btn-lg');
-        // btnPay.addEventListener('click', function (event) {
-        //     SumUpCard.submit();
-        // }); 
-        //insertAfter(submitElm, btnPay);
         sumupCard = SumUpCard.mount({
             id: 'sumup-card',
             nonce: "{{ nonce }}",
             checkoutId: "{{sumupCheckout.id}}",
+            locale: "{{locale}}",
             onResponse: function (type, body) {
                 console.log('Type', type);
                 console.log('Body', body);
