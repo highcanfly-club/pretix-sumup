@@ -1,12 +1,13 @@
 # Register your receivers here
-from pretix.base.signals import register_payment_providers
-from django.http import HttpRequest, HttpResponse
+import sys
 from django.dispatch import receiver
+from django.http import HttpRequest, HttpResponse
 from django.urls import resolve
 from pretix.base.middleware import _merge_csp, _parse_csp, _render_csp
+from pretix.base.signals import register_payment_providers
 from pretix.presale.signals import process_response
+
 from .payment import getNonce
-import sys
 
 
 @receiver(register_payment_providers, dispatch_uid="payment_sumup")

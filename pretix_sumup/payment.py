@@ -1,19 +1,20 @@
-from collections import OrderedDict
 from typing import Union
+
+import json
+import requests
+import sys
+import uuid
+from collections import OrderedDict
+from datetime import datetime, timedelta
 from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
-from django.utils.translation import gettext_lazy as _ ,get_language , to_locale
+from django.utils.crypto import get_random_string
+from django.utils.translation import get_language, gettext_lazy as _, to_locale
 from i18nfield.fields import I18nFormField, I18nTextarea
 from i18nfield.strings import LazyI18nString
-from django.utils.crypto import get_random_string
 from pretix.base.models import OrderPayment
 from pretix.base.payment import BasePaymentProvider
-import requests
-import json
-import uuid
-import sys
-from datetime import datetime, timedelta
 
 
 def getNonce(request):
