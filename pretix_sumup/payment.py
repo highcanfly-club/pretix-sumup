@@ -133,40 +133,6 @@ class SumupPayment(BasePaymentProvider):
             return True
         else:
             return False
-    
-    # def payment_form_render(self, request) -> str:
-    #     if not hasattr(request.session, "_sumup_nonce"):
-    #         request.session["_sumup_nonce"] = get_random_string(32)
-    #     print('SumupPayment.payment_form_render session='+request.session["_sumup_nonce"], file=sys. stderr)
-    #     client_id = self.settings.get('client_id')
-    #     secret = self.settings.get('secret')
-    #     sumupid = self.settings.get('sumupid')
-    #     request.session['sumupToken'] = self.sumup_get_token(client_id, secret)
-    #     if isinstance(request.session['sumupToken'], str):
-    #         if isinstance(request.session["sumupCheckout"]['checkout_reference'], str):
-    #             print("token="+str(request.session['sumupToken']),file=sys.stderr)
-    #             template = get_template('pretix_sumup/checkout_payment_form.html')
-    #             ctx = {
-    #                 'request': request,
-    #                 'event': self.event,
-    #                 'client_id': client_id,
-    #                 'secret': secret,
-    #                 'sumpid': sumupid,
-    #                 'sumupToken': request.session['sumupToken'],
-    #                 'sumupCheckout': request.session["sumupCheckout"],
-    #                 'button_text': _('Pay with Sumup'),
-    #                 'nonce': request.session["_sumup_nonce"]
-    #             }
-    #             return template.render(ctx)
-    #         else:
-    #             ctx = {}
-    #             template = get_template('pretix_sumup/prepare.html')
-    #             return template.render(ctx)
-    #     else:
-    #         self.sumupToken = False
-    #         ctx = {}
-    #         template = get_template('pretix_sumup/not_available.html')
-    #         return template.render(ctx)
 
     def payment_form_render(self, request) -> str:
         print('SumupPayment.payment_form_render', file=sys. stderr)
