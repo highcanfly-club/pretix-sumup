@@ -161,21 +161,6 @@ class SumupPayment(BasePaymentProvider):
         request.session["sumupToken"] = ""
         return False
     
-    # def checkout_prepare(self, request, cart):
-    #     print(cart, file=sys. stderr)
-    #     print(cart["total"], file=sys. stderr)
-    #     print(self.event.currency, file=sys. stderr)
-    #     sumupCheckoutResponse = self.sumup_create_checkout(request.session['sumupToken'], self.settings.get('sumupid'), str(cart["total"]), 'none@example.com', 'none', 'example')
-    #     if (sumupCheckoutResponse.status_code >= 200) and (sumupCheckoutResponse.status_code < 300):
-    #         print('SumupPayment.checkout_prepare OK: '+str(sumupCheckoutResponse.content), file=sys. stderr)
-    #         request.session["sumupCheckout"] = json.loads(sumupCheckoutResponse.content)
-    #         print("checkout="+request.session["sumupCheckout"]['checkout_reference'], file=sys. stderr)
-    #         return True
-    #     else:
-    #         print('SumupPayment.checkout_prepare ERROR: '+str(sumupCheckoutResponse.status_code), file=sys. stderr)
-    #         print(sumupCheckoutResponse.content, file=sys.stderr)
-    #         return False
-
     def payment_prepare(self, request: HttpRequest, payment: OrderPayment) -> bool | str:
         print('SumupPayment.payment_prepare', file=sys. stderr)
         return True
