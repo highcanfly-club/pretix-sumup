@@ -43,3 +43,6 @@ msgstr "Vous verrez le formulaire Sumup après avoir cliqué sur Continuer"
 
 msgid "Sumup plugin is a payment plugin for enabling online payment via Sumup. Note that you will need to register an OAuth application and require to the Sumup team to add the 'payment' scope"
 msgstr "Le plugin Sumup est un plugin de paiement pour activer le paiement en ligne via Sumup. Notez que vous devrez enregistrer une application OAuth et demander à l'équipe SUPUP pour ajouter le scope 'payment'"
+
+msgid "If you have any question don't hesitate to contact us."
+msgstr "Si vous avez des questions, n’hésitez pas à nous contacter."

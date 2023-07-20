@@ -3,7 +3,7 @@ name = "pretix-sumup"
 dynamic = ["version"]
 description = "Sumup plugin"
 readme = "README.rst"
-license = {text = "Apache"}
+license = {file = "LICENSE"}
 keywords = ["pretix"]
 authors = [
     {name = "Ronan Le Meillat", email = "ronan@highcanfly.club"},
