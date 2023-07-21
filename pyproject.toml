@@ -2,7 +2,7 @@
 name = "pretix-sumup"
 dynamic = ["version"]
 description = "Sumup plugin"
-readme = "README.rst"
+readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["pretix"]
 authors = [
