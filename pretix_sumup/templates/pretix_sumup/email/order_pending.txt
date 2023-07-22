@@ -1,2 +1,2 @@
 {% load i18n %}
-{* trans "If you have any question don't hesitate to contact us." %}
+{% trans "If you have any question don't hesitate to contact us." %}
