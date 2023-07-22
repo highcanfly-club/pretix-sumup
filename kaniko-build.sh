@@ -4,7 +4,7 @@
 # released under the GPLv3 terms
 #########################################################################
 echo "NAMESPACE=$NAMESPACE"
-kubectl create namespace $NAMESPACE
+kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 tar -cv --exclude "node_modules" \
   --exclude "dkim.rsa" \
   --exclude "private" \
