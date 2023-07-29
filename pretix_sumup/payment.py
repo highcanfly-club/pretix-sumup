@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 import requests
 import sys
@@ -9,8 +10,9 @@ from django.template.loader import get_template
 from django.utils.crypto import get_random_string
 from django.utils.translation import get_language, gettext_lazy as _, to_locale
 from i18nfield.strings import LazyI18nString
-from pretix.base.models import OrderPayment
+from pretix.base.models import InvoiceAddress, Order, OrderPayment
 from pretix.base.payment import BasePaymentProvider
+from pretix.presale.views.cart import cart_session
 
 
 def getNonce(request):
@@ -23,6 +25,7 @@ class SumupPayment(BasePaymentProvider):
     identifier = "sumuppayment"
     verbose_name = _("Sumup Payment")
     abort_pending_allowed = True
+    ia = InvoiceAddress()
 
     @property
     def test_mode_message(self):
@@ -131,8 +134,24 @@ class SumupPayment(BasePaymentProvider):
         else:
             return False
 
-    def payment_form_render(self, request) -> str:
+    def payment_form_render(self, request: HttpRequest, total: Decimal, order: Order = None) -> str:
+        def get_invoice_address():
+            if order and getattr(order, 'invoice_address', None):
+                request._checkout_flow_invoice_address = order.invoice_address
+            if not hasattr(request, '_checkout_flow_invoice_address'):
+                cs = cart_session(request)
+                iapk = cs.get('invoice_address')
+                if not iapk:
+                    request._checkout_flow_invoice_address = InvoiceAddress()
+                else:
+                    try:
+                        request._checkout_flow_invoice_address = InvoiceAddress.objects.get(pk=iapk, order__isnull=True)
+                    except InvoiceAddress.DoesNotExist:
+                        request._checkout_flow_invoice_address = InvoiceAddress()
+            return request._checkout_flow_invoice_address
+        
         print("SumupPayment.payment_form_render", file=sys.stderr)
+        self.ia = get_invoice_address()
         ctx = {}
         template = get_template("pretix_sumup/prepare.html")
         return template.render(ctx)
@@ -143,14 +162,15 @@ class SumupPayment(BasePaymentProvider):
         secret = self.settings.get("secret")
         sumupid = self.settings.get("sumupid")
         sumupToken = self.sumup_get_token(client_id, secret)
+        cs = cart_session(request)
         if isinstance(sumupToken, str):
             sumupCheckoutResponse = self.sumup_create_checkout(
                 sumupToken,
                 sumupid,
                 str(cart["total"]),
-                "none@example.com",
-                "none",
-                "example",
+                cs["email"],
+                self.ia.name_parts["given_name"] if "given_name" in self.ia.name_parts else "John",
+                self.ia.name_parts["family_name"] if "family_name" in self.ia.name_parts else "Doe",
             )
             if sumupCheckoutResponse.status_code == 201:
                 print(
