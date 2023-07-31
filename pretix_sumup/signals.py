@@ -26,30 +26,31 @@ def signal_process_response(
             h = _parse_csp(response["Content-Security-Policy"])
         else:
             h = {}
-            csps = {
-                "script-src": [
-                    "https://gateway.sumup.com",
-                    "https://net-tracker.notolytix.com",
-                    "'nonce-{}'".format(getNonce(request)),
-                    "'unsafe-eval'",
-                ],
-                "frame-src": [
-                    "https://gateway.sumup.com/",
-                    "'nonce-{}'".format(getNonce(request)),
-                ],
-                "connect-src": [
-                    "https://gateway.sumup.com",
-                    "https://api.sumup.com",
-                    "https://api.notolytix.com",
-                    "https://cdn.optimizely.com",
-                    "'nonce-{}'".format(getNonce(request)),
-                ],
-                "img-src": [
-                    "https://static.sumup.com",
-                    "'nonce-{}'".format(getNonce(request)),
-                ],
-                "style-src": ["'unsafe-inline'"],
-            }
+
+        csps = {
+            "script-src": [
+                "https://gateway.sumup.com",
+                "https://net-tracker.notolytix.com",
+                "'nonce-{}'".format(getNonce(request)),
+                "'unsafe-eval'",
+            ],
+            "frame-src": [
+                "https://gateway.sumup.com/",
+                "'nonce-{}'".format(getNonce(request)),
+            ],
+            "connect-src": [
+                "https://gateway.sumup.com",
+                "https://api.sumup.com",
+                "https://api.notolytix.com",
+                "https://cdn.optimizely.com",
+                "'nonce-{}'".format(getNonce(request)),
+            ],
+            "img-src": [
+                "https://static.sumup.com",
+                "'nonce-{}'".format(getNonce(request)),
+            ],
+            "style-src": ["'unsafe-inline'"],
+        }
 
         _merge_csp(h, csps)
         if h:
