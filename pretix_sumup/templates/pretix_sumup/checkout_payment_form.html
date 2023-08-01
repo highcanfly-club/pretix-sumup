@@ -53,7 +53,7 @@
                     submitElm.classList.remove('hidden');
                     submitElm.disabled = false;
                     submitElm.innerHTML = "{{btn_text}}";
-                    document.querySelector("body > div.container.main-box > main > form").submit();
+                    submitElm.closest('form').submit()
                 }
             }
         });
