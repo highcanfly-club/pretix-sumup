@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-07 19:01+0100\n"
-"PO-Revision-Date: 2023-07-22 08:57+0000\n"
+"PO-Revision-Date: 2023-08-01 16:53+0000\n"
 "Last-Translator: admin <ronan@highcanfly.club>\n"
 "Language-Team: German <http://oci.sctg.eu.org/projects/pretix-sumup/plugin/de_INFORMAL/>\n"
 "Language: de_Informal\n"
@@ -49,22 +49,22 @@ msgid "If you have any question don't hesitate to contact us."
 msgstr "Wenn Sie Fragen haben, zögern Sie nicht, uns zu kontaktieren."
 
 msgid "This order has been marked as paid via Sumup Payment manually."
-msgstr ""
+msgstr "Diese Bestellung wurde manuell über Sumup Payment als bezahlt markiert."
 
 msgid "This order has been paid via Sumup Payment."
-msgstr ""
+msgstr "Diese Bestellung wurde über Sumup Payment bezahlt."
 
 msgid "This order has been planned to be paid via Sumup Payment, but no payment has been received yet."
-msgstr ""
+msgstr "Diese Bestellung sollte über Sumup Payment bezahlt werden, aber es ist noch keine Zahlung eingegangen."
 
 msgid "Merchant ID"
-msgstr ""
+msgstr "Händler-ID"
 
 msgid "Payment date"
-msgstr ""
+msgstr "Zahlungstermin"
 
 msgid "Transaction"
-msgstr ""
+msgstr "Transaktion"
 
 msgid "Currency"
-msgstr ""
+msgstr "Währung"
