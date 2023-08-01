@@ -47,3 +47,12 @@ msgstr ""
 
 msgid "If you have any question don't hesitate to contact us."
 msgstr ""
+
+msgid "This order has been marked as paid via Sumup Payment manually."
+msgstr ""
+
+msgid "This order has been paid via Sumup Payment."
+msgstr ""
+
+msgid "This order has been planned to be paid via Sumup Payment, but no payment has been received yet."
+msgstr ""
