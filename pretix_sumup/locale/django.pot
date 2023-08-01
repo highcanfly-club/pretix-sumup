@@ -56,3 +56,16 @@ msgstr ""
 
 msgid "This order has been planned to be paid via Sumup Payment, but no payment has been received yet."
 msgstr ""
+
+msgid "Merchant ID"
+msgstr ""
+
+msgid "Payment date"
+msgstr ""
+
+msgid "Transaction"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
