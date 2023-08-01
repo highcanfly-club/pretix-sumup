@@ -21,7 +21,7 @@ def signal_process_response(
     sender, request: HttpRequest, response: HttpResponse, **kwargs
 ):
     url = resolve(request.path_info)
-    if url.url_name == "event.checkout":
+    if url.url_name == "event.checkout" or url.url_name == "event.order.pay.confirm":
         if "Content-Security-Policy" in response:
             h = _parse_csp(response["Content-Security-Policy"])
         else:

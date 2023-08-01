@@ -7,6 +7,7 @@ from collections import OrderedDict
 from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
+from django.urls import resolve
 from django.utils.crypto import get_random_string
 from django.utils.translation import get_language, gettext_lazy as _, to_locale
 from i18nfield.strings import LazyI18nString
@@ -148,26 +149,25 @@ class SumupPayment(BasePaymentProvider):
                     except InvoiceAddress.DoesNotExist:
                         request._checkout_flow_invoice_address = InvoiceAddress()
             return request._checkout_flow_invoice_address
-        
+
         print("SumupPayment.payment_form_render", file=sys.stderr)
         self.ia = get_invoice_address()
         ctx = {}
         template = get_template("pretix_sumup/prepare.html")
         return template.render(ctx)
 
-    def checkout_prepare(self, request, cart):
+    def sumup_prepare(self, request, email, total):
         print("SumupPayment.checkout_prepare", file=sys.stderr)
         client_id = self.settings.get("client_id")
         secret = self.settings.get("secret")
         sumupid = self.settings.get("sumupid")
         sumupToken = self.sumup_get_token(client_id, secret)
-        cs = cart_session(request)
         if isinstance(sumupToken, str):
             sumupCheckoutResponse = self.sumup_create_checkout(
                 sumupToken,
                 sumupid,
-                str(cart["total"]),
-                cs["email"],
+                str(total),
+                email,
                 self.ia.name_parts["given_name"] if "given_name" in self.ia.name_parts else "John",
                 self.ia.name_parts["family_name"] if "family_name" in self.ia.name_parts else "Doe",
             )
@@ -190,11 +190,15 @@ class SumupPayment(BasePaymentProvider):
         request.session["sumupToken"] = ""
         return False
 
+    def checkout_prepare(self, request, cart):
+        cs = cart_session(request)
+        return self.sumup_prepare(request, cs["email"], cart["total"])
+
     def payment_prepare(
         self, request: HttpRequest, payment: OrderPayment
     ) -> bool | str:
         print("SumupPayment.payment_prepare", file=sys.stderr)
-        return True
+        return self.sumup_prepare(request, payment.order.email, payment.order.total)
 
     def payment_is_valid_session(self, request):
         print("SumupPayment.payment_is_valid_session", file=sys.stderr)
@@ -219,7 +223,8 @@ class SumupPayment(BasePaymentProvider):
         return locale
 
     def checkout_confirm_render(self, request):
-        print("SumupPayment.checkout_confirm_render", file=sys.stderr)
+        url = resolve(request.path_info)
+        print("SumupPayment.checkout_confirm_render name:{}".format(url.url_name), file=sys.stderr)
         ctx = {
             "request": request,
             "event": self.event,
