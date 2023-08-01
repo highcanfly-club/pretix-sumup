@@ -113,7 +113,7 @@ class SumupPayment(BasePaymentProvider):
         response = requests.request("POST", url, headers=headers, data=payload)
         return response
 
-    def check_sumup_payment_done(self, sumupToken, sumupCheckout):
+    def check_sumup_payment_response(self, sumupToken, sumupCheckout):
         print("SumupPayment.check_sumup_payment_done", file=sys.stderr)
         url = "https://api.sumup.com/v0.1/checkouts/" + sumupCheckout["id"]
         headers = {
@@ -129,10 +129,7 @@ class SumupPayment(BasePaymentProvider):
             ),
             file=sys.stderr,
         )
-        if sumupResponse["status"] == "PAID":
-            return True
-        else:
-            return False
+        return sumupResponse
 
     def payment_form_render(self, request: HttpRequest, total: Decimal, order: Order = None) -> str:
         def get_invoice_address():
@@ -207,10 +204,15 @@ class SumupPayment(BasePaymentProvider):
     def execute_payment(self, request: HttpRequest, payment: OrderPayment):
         print("SumupPayment.execute_payment", file=sys.stderr)
         if ("sumupCheckout" in request.session) and ("sumupToken" in request.session):
-            if self.check_sumup_payment_done(
+            sumupResponse = self.check_sumup_payment_response(
                 request.session["sumupToken"], request.session["sumupCheckout"]
-            ):
+            )
+            if sumupResponse["status"] == "PAID":
+                payment.info_data = sumupResponse
                 payment.confirm()
+            else:
+                payment.fail()
+                
 
     def get_sumup_locale(self, request):
         languageDjango = get_language()
