@@ -1,6 +1,4 @@
----
-title: Sumup for Pretix
----
+# Sumup for Pretix
 
 This is a plugin for [pretix](https://github.com/pretix/pretix).
 
@@ -10,6 +8,16 @@ This is an alpha stage payment plugin for Pretix 4, it allows to use
 Sumup online payment. You need to register an OAuth app in your Sumup
 developer account. You also to manually request the \"payment\" scope to
 Sumup.
+
+# Installation
+```bash
+pip3 install pretix-sumup
+```
+In your Sumup account create an application and fill in the information in the paiement plugin settings.  
+Note that you need to *manually* ask the Sumup team to enable the *'payment'* scope in your app.  
+
+# Translation
+[![Translation status](https://weblate.oci.sctg.eu.org/widgets/pretix-sumup/-/multi-auto.svg)](https://weblate.oci.sctg.eu.org/engage/pretix-sumup/)
 
 # Development setup
 
